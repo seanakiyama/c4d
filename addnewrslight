@@ -1,0 +1,35 @@
+class UpdateLightNames(plugins.MessageData):
+    def CoreMessage(self, id, bc):
+        if id == c4d.EVMSG_CHANGE:
+            doc = GetActiveDocument()
+            if doc:
+                light_objects = []
+                light_intensities = []
+
+                # Iterate over all objects in the document and collect Redshift lights
+                for light in doc.GetObjects():
+                    if light.GetType() == REDSHIFT_AREA_LIGHT_TYPE:
+                        light_objects.append(light)
+                        light_intensity = light[c4d.REDSHIFT_LIGHT_PHYSICAL_INTENSITY]
+                        light_intensities.append(light_intensity)
+
+                if light_intensities:
+                    # Determine the key light and fill light based on intensity
+                    max_intensity = max(light_intensities)
+                    min_intensity = min(light_intensities)
+
+                    key_light = light_objects[light_intensities.index(max_intensity)]
+                    fill_light = light_objects[light_intensities.index(min_intensity)]
+
+                    # Rename the lights with their respective roles
+                    for light in light_objects:
+                        pos = light.GetAbsPos()
+                        x, y = pos.x, pos.y
+
+                        x_name = "Center" if abs(x) < 1.0 else ("Left" if x < 0 else "Right")
+                        y_name = "Center" if abs(y) < 1.0 else ("Bottom" if y < 0 else "Top")
+
+                        light_role = "Key" if light == key_light else "Fill"
+                        light.SetName(f"RS Light {x_name}-{y_name} ({light_role})")
+
+        return True
