@@ -1,4 +1,4 @@
-Plugin that adds a new Redshift Light that updates based on x-y position and renames the ligt object and also whether it's a Key or Fill light depending on the intensity of the light
+Plugin that adds a new Redshift Light that updates its name based on x-y position aand also whether it's a Key or Fill light depending on the intensity of the light
 
 In your Cinema 4D installation folder, navigate to the plugins folder. If the folder doesn't exist, create it.
 Create a new folder in the plugins folder named AddRenamedRedshiftLight.
