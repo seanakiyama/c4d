@@ -1,3 +1,24 @@
+import c4d
+from c4d import plugins, BaseObject
+from c4d.documents import GetActiveDocument
+
+PLUGIN_ID = 1060709 # Replace this number with a unique ID obtained from PluginCafe
+MSG_ID = 1060711 # Replace this number with another unique ID obtained from PluginCafe
+
+REDSHIFT_AREA_LIGHT_TYPE = 1036751
+
+class AddRenamedRedshiftLightCommand(plugins.CommandData):
+    def Execute(self, doc):
+        # Create a new Redshift Area light object
+        light = BaseObject(REDSHIFT_AREA_LIGHT_TYPE)
+        if light is None:
+            raise RuntimeError("Failed to create a Redshift light object.")
+
+        # Insert the light object into the active document
+        doc.InsertObject(light, None, None)
+
+        return True
+
 class UpdateLightNames(plugins.MessageData):
     def CoreMessage(self, id, bc):
         if id == c4d.EVMSG_CHANGE:
@@ -11,6 +32,7 @@ class UpdateLightNames(plugins.MessageData):
                     if light.GetType() == REDSHIFT_AREA_LIGHT_TYPE:
                         light_objects.append(light)
                         light_intensity = light[c4d.REDSHIFT_LIGHT_PHYSICAL_INTENSITY]
+
                         light_intensities.append(light_intensity)
 
                 if light_intensities:
@@ -33,3 +55,11 @@ class UpdateLightNames(plugins.MessageData):
                         light.SetName(f"RS Light {x_name}-{y_name} ({light_role})")
 
         return True
+
+
+if __name__ == "__main__":
+    okyn = plugins.RegisterCommandPlugin(id=PLUGIN_ID, str="Add Renamed Redshift Light", info=0, help="Adds a Redshift light", dat=AddRenamedRedshiftLightCommand(), icon=None)
+    msgyn = plugins.RegisterMessagePlugin(id=MSG_ID, str="Update Light Names", info=0, dat=UpdateLightNames())
+
+    if okyn and msgyn:
+        print("Add Renamed Redshift Light and Update Light Names plugins registered.")
